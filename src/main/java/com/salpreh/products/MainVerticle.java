@@ -1,33 +1,30 @@
 package com.salpreh.products;
 
 import com.salpreh.products.api.RouterConfig;
-import com.salpreh.products.persistence.config.DbConnectionConfig;
+import com.salpreh.products.config.MainConfig;
+import io.micronaut.context.BeanContext;
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.CompositeFuture;
-import io.vertx.core.Future;
+import io.vertx.core.Context;
 import io.vertx.core.Promise;
-import io.vertx.core.http.HttpServer;
+import io.vertx.core.Vertx;
 
 public class MainVerticle extends AbstractVerticle {
 
-  private final RouterConfig routerConfig = new RouterConfig();
+  private BeanContext beanContext;
+  private RouterConfig routerConfig;
+
+  @Override
+  public void init(Vertx vertx, Context context) {
+    super.init(vertx, context);
+
+    beanContext = MainConfig.create(vertx).init();
+
+    routerConfig = beanContext.getBean(RouterConfig.class);
+  }
 
   @Override
   public void start(Promise<Void> startPromise) throws Exception {
-    Future<?> dbConfig = vertx
-      .executeBlocking(promise -> {
-        DbConnectionConfig.init(vertx);
-        promise.complete();
-      })
-      .onComplete(res -> {
-        if (res.succeeded()) {
-          System.out.println("DB connection established");
-        } else {
-          System.out.println("DB connection failed"  + res.cause());
-        }
-      });
-
-    Future<HttpServer> serverConfig = vertx.createHttpServer()
+    vertx.createHttpServer()
       .requestHandler(routerConfig.config(vertx))
       .listen(8080)
       .onComplete(res -> {
@@ -38,18 +35,10 @@ public class MainVerticle extends AbstractVerticle {
           startPromise.fail(res.cause());
         }
       });
-
-    CompositeFuture.all(dbConfig, serverConfig).onComplete(res -> {
-      if (res.succeeded()) {
-        System.out.println("All services started");
-      } else {
-        System.out.println("Some services failed to start");
-      }
-    });
   }
 
   @Override
   public void stop() throws Exception {
-    DbConnectionConfig.close();
+    beanContext.close();
   }
 }
