@@ -5,10 +5,14 @@ import com.salpreh.products.domain.services.ProductService;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.json.Json;
 import io.vertx.ext.web.RoutingContext;
+import jakarta.inject.Singleton;
+import lombok.RequiredArgsConstructor;
 
+@Singleton
+@RequiredArgsConstructor
 public class ProductHandler {
 
-  private final ProductService productService = new ProductService();
+  private final ProductService productService;
 
   public void getAll(RoutingContext routingContext) {
     productService.getAll()
