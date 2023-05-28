@@ -11,43 +11,89 @@ public class ProductHandler {
   private final ProductService productService = new ProductService();
 
   public void getAll(RoutingContext routingContext) {
-    routingContext.response()
-      .putHeader("content-type", "application/json")
-      .end(Json.encode(productService.getAll()));
+    productService.getAll()
+      .onComplete(res -> {
+        if (res.succeeded()) {
+          routingContext.response()
+            .putHeader("content-type", "application/json")
+            .end(Json.encode(res.result()));
+        } else {
+          routingContext.response()
+            .setStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR.code())
+            .end();
+        }
+      });
   }
 
   public void getOne(RoutingContext routingContext) {
     long id = Long.parseLong(routingContext.pathParam("id"));
 
-    routingContext.response()
-      .putHeader("content-type", "application/json")
-      .end(Json.encode(productService.getById(id)));
+    productService.getById(id)
+      .onComplete(res -> {
+        if (res.succeeded()) {
+          routingContext.response()
+            .putHeader("content-type", "application/json")
+            .end(Json.encode(res.result()));
+        } else {
+          routingContext.response()
+            .setStatusCode(HttpResponseStatus.NOT_FOUND.code())
+            .end();
+        }
+      });
   }
 
   public void create(RoutingContext routingContext) {
     Product product = routingContext.body().asPojo(Product.class);
 
-    routingContext.response()
-      .putHeader("content-type", "application/json")
-      .setStatusCode(HttpResponseStatus.CREATED.code())
-      .end(Json.encode(productService.create(product)));
+    productService.create(product)
+        .onComplete(res -> {
+          if (res.succeeded()) {
+            routingContext.response()
+              .putHeader("content-type", "application/json")
+              .setStatusCode(HttpResponseStatus.CREATED.code())
+              .end(Json.encode(res.result()));
+          } else {
+            routingContext.response()
+              .setStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR.code())
+              .end();
+          }
+        });
   }
 
   public void update(RoutingContext routingContext) {
     long id = Long.parseLong(routingContext.pathParam("id"));
     Product product = routingContext.body().asPojo(Product.class);
 
-    routingContext.response()
-      .putHeader("content-type", "application/json")
-      .end(Json.encode(productService.update(id, product)));
+    productService.update(id, product)
+      .onComplete(res -> {
+        if (res.succeeded()) {
+          routingContext
+            .response()
+            .putHeader("content-type", "application/json")
+            .end(Json.encode(res.result()));
+        } else {
+          routingContext.response()
+            .setStatusCode(HttpResponseStatus.NOT_FOUND.code())
+            .end();
+        }
+      });
+
   }
 
   public void delete(RoutingContext routingContext) {
     long id = Long.parseLong(routingContext.pathParam("id"));
-    productService.delete(id);
-
-    routingContext.response()
-      .setStatusCode(HttpResponseStatus.NO_CONTENT.code())
-      .end();
+    productService.delete(id)
+      .onComplete(res -> {
+        if (res.succeeded()) {
+          routingContext.response()
+            .putHeader("content-type", "application/json")
+            .setStatusCode(HttpResponseStatus.NO_CONTENT.code())
+            .end();
+        } else {
+          routingContext.response()
+            .setStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR.code())
+            .end();
+        }
+      });
   }
 }

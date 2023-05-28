@@ -3,12 +3,14 @@ package com.salpreh.products.api;
 import com.salpreh.products.api.handlers.ProductHandler;
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.BodyHandler;
 
 public class RouterConfig {
 
   private final ProductHandler productHandler = new ProductHandler();
   public Router config(Vertx vertx) {
     Router router = Router.router(vertx);
+    router.route().handler(BodyHandler.create());
 
     router.get("/product").handler(productHandler::getAll);
     router.get("/product/:id").handler(productHandler::getOne);

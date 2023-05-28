@@ -1,37 +1,31 @@
 package com.salpreh.products.domain.services;
 
 import com.salpreh.products.domain.models.Product;
+import com.salpreh.products.persistence.repositories.ProductRepository;
+import io.vertx.core.Future;
 import java.util.List;
 
 public class ProductService {
 
-  public List<Product> getAll() {
-    return List.of(mock());
+  private final ProductRepository productRepository = new ProductRepository();
+
+  public Future<List<Product>> getAll() {
+    return productRepository.findAll();
   }
 
-  public Product getById(long id) {
-    return mock();
+  public Future<Product> getById(long id) {
+    return productRepository.findById(id);
   }
 
-  public Product create(Product product) {
-    return mock();
+  public Future<Product> create(Product product) {
+    return productRepository.create(product);
   }
 
-  public Product update(long id, Product product) {
-    return mock();
+  public Future<Product> update(long id, Product product) {
+    return productRepository.update(id, product);
   }
 
-  public void delete(Long id) {
-    // Do nothing
-  }
-
-  private Product mock() {
-    return Product.builder()
-      .id(1L)
-      .name("Orxata")
-      .description("Orxata de xufa")
-      .price(10.0)
-      .stock(50)
-      .build();
+  public Future<Void> delete(Long id) {
+    return productRepository.delete(id);
   }
 }
