@@ -17,7 +17,9 @@ public class MainVerticle extends AbstractVerticle {
   public void init(Vertx vertx, Context context) {
     super.init(vertx, context);
 
-    beanContext = MainConfig.create(vertx).init();
+    beanContext = BeanContext.build();
+    beanContext.registerSingleton(vertx);
+    beanContext.start();
 
     routerConfig = beanContext.getBean(RouterConfig.class);
   }

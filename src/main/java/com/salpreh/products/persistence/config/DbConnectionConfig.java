@@ -1,17 +1,22 @@
 package com.salpreh.products.persistence.config;
 
+import io.micronaut.context.annotation.Factory;
 import io.vertx.core.Vertx;
 import io.vertx.pgclient.PgConnectOptions;
 import io.vertx.sqlclient.Pool;
 import io.vertx.sqlclient.PoolOptions;
 import io.vertx.sqlclient.SqlClient;
 import jakarta.annotation.PreDestroy;
+import jakarta.inject.Singleton;
 
+@Factory
+@Singleton
 public class DbConnectionConfig {
 
   private SqlClient client;
 
-  public SqlClient init(Vertx vertx) {
+  @Singleton
+  public SqlClient client(Vertx vertx) {
     if (client != null) return client;
 
     PgConnectOptions connectOptions = new PgConnectOptions()
