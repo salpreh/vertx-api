@@ -4,13 +4,10 @@ import static com.salpreh.products.persistence.config.DbConnectionConfig.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.salpreh.products.domain.models.Product;
-import com.salpreh.products.persistence.config.DbConnectionConfig;
 import com.salpreh.products.persistence.entities.ProductEntity;
 import com.salpreh.products.persistence.mappers.DbMapper;
 import io.vertx.core.Future;
-import io.vertx.sqlclient.impl.SqlClientInternal;
 import io.vertx.sqlclient.templates.SqlTemplate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.StreamSupport;
