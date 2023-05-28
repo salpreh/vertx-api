@@ -1,7 +1,8 @@
 package com.salpreh.products.domain.services;
 
 import com.salpreh.products.domain.models.Product;
-import com.salpreh.products.persistence.repositories.ProductRepository;
+import com.salpreh.products.domain.ports.driven.ProductsDatasourcePort;
+import com.salpreh.products.domain.ports.driving.IProductService;
 import io.vertx.core.Future;
 import jakarta.inject.Singleton;
 import java.util.List;
@@ -9,9 +10,9 @@ import lombok.RequiredArgsConstructor;
 
 @Singleton
 @RequiredArgsConstructor
-public class ProductService {
+public class ProductService implements IProductService {
 
-  private final ProductRepository productRepository;
+  private final ProductsDatasourcePort productRepository;
 
   public Future<List<Product>> getAll() {
     return productRepository.findAll();

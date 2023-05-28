@@ -1,6 +1,7 @@
 package com.salpreh.products.persistence.repositories;
 
 import com.salpreh.products.domain.models.Product;
+import com.salpreh.products.domain.ports.driven.ProductsDatasourcePort;
 import com.salpreh.products.persistence.entities.ProductEntity;
 import com.salpreh.products.persistence.mappers.DbMapper;
 import io.vertx.core.Future;
@@ -14,11 +15,12 @@ import lombok.RequiredArgsConstructor;
 
 @Singleton
 @RequiredArgsConstructor
-public class ProductRepository {
+public class ProductRepository implements ProductsDatasourcePort {
 
   private final DbMapper mapper;
   private final SqlClient client;
 
+  @Override
   public Future<Product> findById(long id) {
     return SqlTemplate.forQuery(client, "select * from product where id = #{id}")
       .mapTo(ProductEntity.class)
@@ -27,6 +29,7 @@ public class ProductRepository {
       .map(mapper::map);
   }
 
+  @Override
   public Future<List<Product>> findAll() {
     return SqlTemplate.forQuery(client, "select * from product")
       .mapTo(ProductEntity.class)
@@ -37,6 +40,7 @@ public class ProductRepository {
       );
   }
 
+  @Override
   public Future<Product> create(Product product) {
     return SqlTemplate.forQuery(client, "insert into product (name, description, price, stock) values (#{name}, #{description}, #{price}, #{stock}) returning *")
       .mapFrom(ProductEntity.class)
@@ -46,6 +50,7 @@ public class ProductRepository {
       .map(mapper::map);
   }
 
+  @Override
   public Future<Product> update(long id, Product product) {
     product.setId(id);
 
@@ -57,6 +62,7 @@ public class ProductRepository {
       .map(mapper::map);
   }
 
+  @Override
   public Future<Void> delete(long id) {
     return SqlTemplate.forQuery(client, "delete from product where id = #{id}")
       .execute(Map.of("id", id))
