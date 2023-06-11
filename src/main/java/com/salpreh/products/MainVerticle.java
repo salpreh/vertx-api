@@ -1,7 +1,8 @@
 package com.salpreh.products;
 
 import com.salpreh.products.api.RouterConfig;
-import com.salpreh.products.config.MainConfig;
+import com.salpreh.products.config.ConfigLoader.Config;
+import com.salpreh.products.config.ConfigLoader.ConfigStore;
 import io.micronaut.context.BeanContext;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
@@ -12,6 +13,7 @@ public class MainVerticle extends AbstractVerticle {
 
   private BeanContext beanContext;
   private RouterConfig routerConfig;
+  private ConfigStore configStore;
 
   @Override
   public void init(Vertx vertx, Context context) {
@@ -22,21 +24,26 @@ public class MainVerticle extends AbstractVerticle {
     beanContext.start();
 
     routerConfig = beanContext.getBean(RouterConfig.class);
+    configStore = beanContext.getBean(ConfigStore.class);
   }
 
   @Override
   public void start(Promise<Void> startPromise) throws Exception {
-    vertx.createHttpServer()
-      .requestHandler(routerConfig.config(vertx))
-      .listen(8080)
-      .onComplete(res -> {
-        if (res.succeeded()) {
-          startPromise.complete();
-          System.out.println("HTTP server started on port 8888");
-        } else {
-          startPromise.fail(res.cause());
-        }
-      });
+    configStore.getConfig().onComplete(result -> {
+      Config config = result.result();
+
+      vertx.createHttpServer()
+        .requestHandler(routerConfig.config(vertx))
+        .listen(config.getProperty("server.port", Integer.class))
+        .onComplete(res -> {
+          if (res.succeeded()) {
+            startPromise.complete();
+            System.out.println("HTTP server started");
+          } else {
+            startPromise.fail(res.cause());
+          }
+        });
+    });
   }
 
   @Override
