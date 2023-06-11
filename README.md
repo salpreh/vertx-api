@@ -2,7 +2,7 @@
 
 <img src="https://img.shields.io/badge/vert.x-4.4.2-purple.svg">
 
-This application was generated using http://start.vertx.io
+A demo web server REST API project using [Vert.x](http://start.vertx.io).
 
 ## Building
 
