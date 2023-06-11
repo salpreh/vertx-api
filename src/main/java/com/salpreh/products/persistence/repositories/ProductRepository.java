@@ -5,67 +5,80 @@ import com.salpreh.products.domain.ports.driven.ProductsDatasourcePort;
 import com.salpreh.products.persistence.entities.ProductEntity;
 import com.salpreh.products.persistence.mappers.DbMapper;
 import io.vertx.core.Future;
-import io.vertx.sqlclient.SqlClient;
-import io.vertx.sqlclient.templates.SqlTemplate;
 import jakarta.inject.Singleton;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.StreamSupport;
+import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.reactive.stage.Stage.SessionFactory;
 
 @Singleton
 @RequiredArgsConstructor
 public class ProductRepository implements ProductsDatasourcePort {
 
   private final DbMapper mapper;
-  private final SqlClient client;
+  private final SessionFactory emf;
 
   @Override
   public Future<Product> findById(long id) {
-    return SqlTemplate.forQuery(client, "select * from product where id = #{id}")
-      .mapTo(ProductEntity.class)
-      .execute(Map.of("id", id))
-      .map(rows -> rows.iterator().next())
-      .map(mapper::map);
+    return Future.fromCompletionStage(
+      emf.withSession(session -> session.find(ProductEntity.class, id))
+    )
+      .map(mapper::map)
+      .andThen(result -> {
+        if (result.result() == null) {
+          throw new EntityNotFoundException("Product not found");
+        }
+      });
   }
 
   @Override
   public Future<List<Product>> findAll() {
-    return SqlTemplate.forQuery(client, "select * from product")
-      .mapTo(ProductEntity.class)
-      .execute(null)
-      .map(rows -> StreamSupport.stream(rows.spliterator(), false)
-        .map(mapper::map)
-        .toList()
-      );
+    return Future.fromCompletionStage(
+      emf.withSession(session -> session.createQuery("SELECT p FROM ProductEntity p", ProductEntity.class)
+          .getResultList())
+    )
+      .map(mapper::mapProducts);
   }
 
   @Override
   public Future<Product> create(Product product) {
-    return SqlTemplate.forQuery(client, "insert into product (name, description, price, stock) values (#{name}, #{description}, #{price}, #{stock}) returning *")
-      .mapFrom(ProductEntity.class)
-      .mapTo(ProductEntity.class)
-      .execute(mapper.map(product))
-      .map(v -> v.iterator().next())
-      .map(mapper::map);
+    ProductEntity productData = mapper.map(product);
+
+    return Future.fromCompletionStage(
+      emf.withSession(session -> session.persist(productData)
+        .thenAccept(__ -> session.flush()))
+    )
+      .onFailure(Throwable::printStackTrace)
+      .map(__ -> mapper.map(productData));
   }
 
   @Override
   public Future<Product> update(long id, Product product) {
-    product.setId(id);
-
-    return SqlTemplate.forQuery(client, "update product set name = #{name}, description = #{description}, price = #{price}, stock = #{stock} where id = #{id} returning *")
-      .mapFrom(ProductEntity.class)
-      .mapTo(ProductEntity.class)
-      .execute(mapper.map(product))
-      .map(v -> v.iterator().next())
-      .map(mapper::map);
+    return Future.fromCompletionStage(
+      emf.withSession(session -> session.find(ProductEntity.class, id)
+        .thenApply(pd -> {
+          if (pd == null) throw new EntityNotFoundException("Product not found");
+          else return pd;
+        })
+        .thenApply(pd -> mapper.map(product, pd))
+        .thenCompose(session::merge)
+        .thenCompose(pd -> session.flush().thenApply(__ -> pd))
+      )
+    ).map(mapper::map);
   }
 
   @Override
   public Future<Void> delete(long id) {
-    return SqlTemplate.forQuery(client, "delete from product where id = #{id}")
-      .execute(Map.of("id", id))
-      .mapEmpty();
+    return Future.fromCompletionStage(
+      emf.withSession(session -> session.find(ProductEntity.class, id)
+        .thenApply(pd -> {
+          if (pd == null) throw new EntityNotFoundException("Product not found");
+          else return pd;
+        })
+        .thenCompose(session::remove)
+        .thenCompose(__ -> session.flush())
+        .handle((__, t) -> null) // If entity do not exists we take it as a successfully deletion
+      )
+    ).mapEmpty();
   }
 }
