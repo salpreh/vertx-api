@@ -4,7 +4,7 @@ import com.salpreh.products.domain.models.Product;
 import io.vertx.core.Future;
 import java.util.List;
 
-public interface IProductService {
+public interface ProductServicePort {
   Future<List<Product>> getAll();
   Future<Product> getById(long id);
   Future<Product> create(Product product);

@@ -1,7 +1,7 @@
 package com.salpreh.products.api.handlers;
 
 import com.salpreh.products.domain.models.Product;
-import com.salpreh.products.domain.ports.driving.IProductService;
+import com.salpreh.products.domain.ports.driving.ProductServicePort;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.json.Json;
 import io.vertx.ext.web.RoutingContext;
@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProductHandler {
 
-  private final IProductService productService;
+  private final ProductServicePort productService;
 
   public void getAll(RoutingContext routingContext) {
     productService.getAll()

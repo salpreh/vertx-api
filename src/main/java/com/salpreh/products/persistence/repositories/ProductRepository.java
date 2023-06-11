@@ -77,7 +77,7 @@ public class ProductRepository implements ProductsDatasourcePort {
         })
         .thenCompose(session::remove)
         .thenCompose(__ -> session.flush())
-        .handle((__, t) -> null) // If entity do not exists we take it as a successfully deletion
+        .handle((__, t) -> null) // If entity do not exist we take it as a successfully delete
       )
     ).mapEmpty();
   }

@@ -2,7 +2,7 @@ package com.salpreh.products.domain.services;
 
 import com.salpreh.products.domain.models.Product;
 import com.salpreh.products.domain.ports.driven.ProductsDatasourcePort;
-import com.salpreh.products.domain.ports.driving.IProductService;
+import com.salpreh.products.domain.ports.driving.ProductServicePort;
 import io.vertx.core.Future;
 import jakarta.inject.Singleton;
 import java.util.List;
@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 @Singleton
 @RequiredArgsConstructor
-public class ProductService implements IProductService {
+public class ProductService implements ProductServicePort {
 
   private final ProductsDatasourcePort productRepository;
 
