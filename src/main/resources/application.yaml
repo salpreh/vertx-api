@@ -5,6 +5,6 @@ database:
   connection:
     host: localhost
     port: 5432
-    database: database
+    database: products
     username: root
     password: password
