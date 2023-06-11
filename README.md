@@ -16,6 +16,18 @@ To package your application:
 ./mvnw clean package
 ```
 
+## Running
+
+Boot a postgres DB. There is a docker-compose file in the root of the project that will do this for you:
+```sh
+docker-compose up -d
+```
+
+Run flyway migrations to create the database schema:
+```sh
+./mvnw flyway:migrate
+```
+
 To run your application:
 ```sh
 ./mvnw clean compile exec:java

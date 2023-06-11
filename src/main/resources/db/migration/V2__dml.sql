@@ -1,0 +1,15 @@
+INSERT INTO product(name, description, price, stock)
+VALUES ('Apple', 'A fruit', 1.99, 100),
+       ('Orange', 'A fruit', 2.99, 100),
+       ('Banana', 'A fruit', 3.99, 100),
+       ('Pear', 'A fruit', 4.99, 100),
+       ('Rice', 'A grain', 5.99, 100),
+       ('Bread', 'A grain', 6.99, 100),
+       ('Milk', 'A dairy', 7.99, 100),
+       ('Cheese', 'A dairy', 8.99, 100),
+       ('Eggs', 'A dairy', 9.99, 100),
+       ('Chicken', 'A meat', 10.99, 100),
+       ('Beef', 'A meat', 11.99, 100),
+       ('Pasta', 'A grain', 17.99, 100),
+       ('Potato', 'A vegetable', 18.99, 100),
+       ('Broccoli', 'A vegetable', 23.99, 100);
