@@ -1,0 +1,162 @@
+{
+	"info": {
+		"_postman_id": "19a6ef70-a54b-4806-a246-27c04dad5168",
+		"name": "product-vtx",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "4371815"
+	},
+	"item": [
+		{
+			"name": "getAll",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/product",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"product"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getProduct",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/product/{{id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"product",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "createProduct",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Orxata\",\n    \"description\": \"Orxata de xufa\",\n    \"price\": 6.55,\n    \"stock\": 150\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/product",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"product"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "updateProduct",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Orange Juice\",\n    \"description\": \"Suc de taronja\",\n    \"price\": 9.99,\n    \"stock\": 200\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/product/{{id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"product",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deleteProduct",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Damn Valencian rice\",\n    \"description\": \"Original valencian rice\",\n    \"imageUrl\": \"http://mydomain/img_rice.jpg\",\n    \"copyright\": {\n        \"clause\": \"Should be keeped original\",\n        \"dueDate\": \"2024-11-01T01:00:00+01:00\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/product/{{id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"product",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "cache_manager",
+			"value": "/actuator/cache-manager",
+			"type": "string"
+		},
+		{
+			"key": "id",
+			"value": "044a4c78-1ff4-4dae-acd4-040f71b031fe",
+			"type": "string"
+		}
+	]
+}
