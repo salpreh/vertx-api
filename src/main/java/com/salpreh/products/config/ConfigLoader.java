@@ -1,6 +1,5 @@
 package com.salpreh.products.config;
 
-import io.micronaut.context.annotation.Factory;
 import io.vertx.config.ConfigRetriever;
 import io.vertx.config.ConfigRetrieverOptions;
 import io.vertx.config.ConfigStoreOptions;
@@ -8,13 +7,14 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.pointer.JsonPointer;
-import jakarta.inject.Singleton;
 
-@Factory
 public class ConfigLoader {
 
-  @Singleton
-  public ConfigRetriever configRetriever(Vertx vertx) {
+  public static ConfigStore configStore(Vertx vertx) {
+    return ConfigStore.of(configRetriever(vertx));
+  }
+
+  private static ConfigRetriever configRetriever(Vertx vertx) {
     ConfigStoreOptions store = new ConfigStoreOptions()
       .setType("file")
       .setFormat("yaml")
@@ -28,11 +28,6 @@ public class ConfigLoader {
     ConfigRetriever configRetriever = ConfigRetriever.create(vertx, retrieverOptions);
 
     return configRetriever;
-  }
-
-  @Singleton
-  public ConfigStore configStore(ConfigRetriever configRetriever) {
-    return ConfigStore.of(configRetriever);
   }
 
   public static class ConfigStore {

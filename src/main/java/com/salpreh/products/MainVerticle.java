@@ -1,11 +1,12 @@
 package com.salpreh.products;
 
 import com.salpreh.products.api.RouterConfig;
+import com.salpreh.products.config.ConfigLoader;
 import com.salpreh.products.config.ConfigLoader.Config;
-import com.salpreh.products.config.ConfigLoader.ConfigStore;
 import io.micronaut.context.BeanContext;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
+import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 
@@ -13,7 +14,7 @@ public class MainVerticle extends AbstractVerticle {
 
   private BeanContext beanContext;
   private RouterConfig routerConfig;
-  private ConfigStore configStore;
+  private Future<Config> config;
 
   @Override
   public void init(Vertx vertx, Context context) {
@@ -21,15 +22,18 @@ public class MainVerticle extends AbstractVerticle {
 
     beanContext = BeanContext.build();
     beanContext.registerSingleton(vertx);
-    beanContext.start();
-
-    routerConfig = beanContext.getBean(RouterConfig.class);
-    configStore = beanContext.getBean(ConfigStore.class);
+    config = ConfigLoader.configStore(vertx)
+      .getConfig()
+      .andThen(config -> beanContext.registerSingleton(config.result()))
+      .andThen(__ -> {
+        beanContext.start();
+        routerConfig = beanContext.getBean(RouterConfig.class);
+      });
   }
 
   @Override
   public void start(Promise<Void> startPromise) throws Exception {
-    configStore.getConfig().onComplete(result -> {
+    config.onComplete(result -> {
       Config config = result.result();
 
       vertx.createHttpServer()
