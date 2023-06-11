@@ -28,7 +28,8 @@ public class MainVerticle extends AbstractVerticle {
       .andThen(__ -> {
         beanContext.start();
         routerConfig = beanContext.getBean(RouterConfig.class);
-      });
+      })
+      .onFailure(Throwable::printStackTrace);
   }
 
   @Override
