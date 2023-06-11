@@ -46,3 +46,6 @@ To run your application:
 - https://vertx.io/docs/vertx-sql-client-templates/java/#_getting_started
 - https://www.zsiegel.com/2019/07/03/dependency-injection-with-vertx
 - https://taraskohut.medium.com/vert-x-micronaut-do-we-need-dependency-injection-in-the-microservices-world-84e43b3b228e
+
+## Notes
+Current implementation with hibernate. Previous implementation with vertx-sql-client-templates in `feature/sql-client-template` branch.
