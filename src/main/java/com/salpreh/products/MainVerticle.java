@@ -9,7 +9,9 @@ import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class MainVerticle extends AbstractVerticle {
 
   private BeanContext beanContext;
@@ -36,14 +38,15 @@ public class MainVerticle extends AbstractVerticle {
   public void start(Promise<Void> startPromise) throws Exception {
     config.onComplete(result -> {
       Config config = result.result();
+      int port = config.getProperty("server.port", Integer.class);
 
       vertx.createHttpServer()
         .requestHandler(routerConfig.config(vertx))
-        .listen(config.getProperty("server.port", Integer.class))
+        .listen(port)
         .onComplete(res -> {
           if (res.succeeded()) {
             startPromise.complete();
-            System.out.println("HTTP server started");
+            log.info("HTTP server started at port {}", port);
           } else {
             startPromise.fail(res.cause());
           }
